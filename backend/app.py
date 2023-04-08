@@ -1,4 +1,4 @@
-from flask import Flask, request, Response, render_template
+from flask import Flask, request, Response, render_template, jsonify
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 
@@ -53,6 +53,23 @@ def addQuestions():
         except Exception as e:
             print(e)
             return "Sorry, could not add your question with id! " + str(request.form['unique_id'])
+
+@api.route('/return-questions')
+def returnQuestions():
+    allQuestions = Trivia.query.all()
+    return jsonify({
+        "questions": [
+            {
+                "unique_id": ques.unique_id,
+                "question": ques.question,
+                "option1": ques.option1,
+                "option2": ques.option2,
+                "option3": ques.option3,
+                "option4": ques.option4,
+                "correctAnswer": ques.correctAnswer
+            } for ques in allQuestions
+        ]
+    })
 
 if "__name__"=="__main__":
     api.run(debug=True)
