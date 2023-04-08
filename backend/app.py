@@ -71,5 +71,22 @@ def returnQuestions():
         ]
     })
 
+@api.route('/validate-question', methods=['POST'])
+def validateQuestion():
+    form_data = request.get_json(force=True)
+    question_id = form_data['unique_id']
+    answer = form_data['answer']
+    question= Trivia.query.filter(Trivia.unique_id == question_id).first()
+    is_valid_question = question is not None
+
+    if is_valid_question:
+        is_valid_answer = answer == question.correctAnswer
+        return jsonify({
+            'valid': is_valid_answer
+        })
+    else:
+        return Response(status=400)
+
+
 if "__name__"=="__main__":
     api.run(debug=True)
